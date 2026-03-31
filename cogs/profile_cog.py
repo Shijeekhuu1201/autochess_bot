@@ -28,6 +28,9 @@ def _best_finish_label(championships: int, runner_ups: int, third_places: int) -
 PROFILE_ACCESS_ROLE_NAMES = ["Confirmed", "✅ Confirmed"]
 
 
+BOOSTER_ROLE_NAMES = ["Server Booster", "Discord Nitro Booster", "Booster"]
+
+
 def _resolve_support_role_chain(role_name: str | None, all_role_names: list[str]) -> list[str]:
     if not role_name or role_name not in all_role_names:
         return []
@@ -36,7 +39,9 @@ def _resolve_support_role_chain(role_name: str | None, all_role_names: list[str]
 
 
 def _has_profile_access(member: discord.Member) -> bool:
-    allowed_role_names = set(DONOR_ROLE_NAMES + SPONSOR_ROLE_NAMES + PROFILE_ACCESS_ROLE_NAMES)
+    allowed_role_names = set(
+        DONOR_ROLE_NAMES + SPONSOR_ROLE_NAMES + PROFILE_ACCESS_ROLE_NAMES + BOOSTER_ROLE_NAMES
+    )
     return any(role.name in allowed_role_names for role in member.roles)
 
 
