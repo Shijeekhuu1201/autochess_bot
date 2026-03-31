@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page_title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="site-bg"></div>
+
+  <div class="site-wrap">
+    <header class="topbar">
+      <a href="{{ url_for('home') }}" class="brand">
+        <div class="brand-icon">♟</div>
+        <div class="brand-text">
+          <h1>{{ tournament.title if tournament else "DAC TOURNAMENT" }}</h1>
+          <p>Community Tournament Platform</p>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('participants') }}">Participants</a>
+        <a href="{{ url_for('tournament_page') }}">Tournament</a>
+        <a href="{{ url_for('prize_page') }}">Prize</a>
+        <a href="{{ url_for('rules_page') }}">Rules</a>
+        <a href="{{ url_for('sponsors_page') }}">Sponsors</a>
+        <a href="{{ url_for('leaderboard_page') }}">Leaderboard</a>
+      </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+      Community Tournament Platform · Full Premium Live Web
+    </footer>
+  </div>
+</body>
+</html>

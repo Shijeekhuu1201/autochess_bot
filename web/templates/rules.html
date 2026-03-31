@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Rules</h2>
+  <p>Official tournament rules and participation guidelines.</p>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h3>Tournament Guidelines</h3>
+    <span>Official Rules</span>
+  </div>
+
+  <div class="rules-box">{{ rules_text }}</div>
+</section>
+{% endblock %}

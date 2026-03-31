@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero hero-home">
+  <div class="hero-left">
+    <div class="eyebrow">LIVE WEEKLY CUP</div>
+    <h2>{{ tournament.title if tournament else "No Active Tournament" }}</h2>
+    <p>
+      {% if tournament %}
+        Premium multi-page tournament site synced from Discord. Track participants,
+        stage progress, prize pool, sponsors, rules, and leaderboard in real time.
+      {% else %}
+        No active tournament found.
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span>Status</span>
+      <strong>{{ tournament.status if tournament else "-" }}</strong>
+    </div>
+    <div class="hero-stat">
+      <span>Current Stage</span>
+      <strong>{{ current_stage }}</strong>
+    </div>
+    <div class="hero-stat">
+      <span>Confirmed</span>
+      <strong>{{ confirmed_count }}/{{ tournament.max_players if tournament else 32 }}</strong>
+    </div>
+    <div class="hero-stat">
+      <span>Prize Pool</span>
+      <strong>{{ format_money(tournament.prize_total if tournament else 0) }}</strong>
+    </div>
+  </div>
+</section>
+
+{% if podium %}
+<section class="section">
+  <div class="section-header">
+    <h3>Grand Final Podium</h3>
+    <span>Champion Snapshot</span>
+  </div>
+
+  <div class="podium-grid">
+    {% for item in podium %}
+    <div class="podium-card rank-{{ item.final_rank }}">
+      <div class="podium-medal">
+        {% if item.final_rank == 1 %}🥇{% elif item.final_rank == 2 %}🥈{% else %}🥉{% endif %}
+      </div>
+      <div class="podium-rank">{{ item.final_rank }} Place</div>
+      <div class="podium-name">{{ item.display_name }}</div>
+      <div class="podium-prize">{{ format_money(item.amount) }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<div class="content-grid">
+  <section class="card span-4">
+    <div class="section-header">
+      <h3>Quick Stats</h3>
+      <span>Overview</span>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row"><span>Registered</span><strong>{{ registered_players|length }}</strong></div>
+      <div class="info-row"><span>Confirmed</span><strong>{{ confirmed_players|length }}</strong></div>
+      <div class="info-row"><span>Waitlist</span><strong>{{ waitlist_players|length }}</strong></div>
+      <div class="info-row"><span>Sponsors</span><strong>{{ sponsors|length }}</strong></div>
+      <div class="info-row"><span>Total Sponsored</span><strong>{{ format_money(sponsor_total) }}</strong></div>
+    </div>
+  </section>
+
+  <section class="card span-8">
+    <div class="section-header">
+      <h3>Latest Stage View</h3>
+      <span>{{ current_stage }}</span>
+    </div>
+
+    {% if stage_groups %}
+    <div class="stage-grid">
+      {% for stage in stage_groups %}
+      <div class="stage-card">
+        <div class="stage-head">
+          <div>
+            <h4>{{ stage.title }}</h4>
+            <p>Host: {{ stage.host_name }}</p>
+            <p>Password: {{ stage.password }}</p>
+          </div>
+          <span class="badge">{{ stage.stage_status }}</span>
+        </div>
+
+        <div class="player-list">
+          {% for player in stage.players[:4] %}
+          <div class="player-row">
+            <div class="player-main"><strong>{{ player.slot_no }}. {{ player.display_name }}</strong></div>
+            <div class="player-meta"><span>Total {{ player.total_points }}</span></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">No stage brackets created yet.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

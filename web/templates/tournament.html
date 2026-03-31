@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Tournament</h2>
+  <p>Event information, format, current stage, and live tournament details.</p>
+</section>
+
+<div class="content-grid">
+  <section class="card span-6">
+    <div class="section-header">
+      <h3>Event Info</h3>
+      <span>Overview</span>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row"><span>Title</span><strong>{{ tournament.title if tournament else "-" }}</strong></div>
+      <div class="info-row"><span>Type</span><strong>{{ tournament.type if tournament else "-" }}</strong></div>
+      <div class="info-row"><span>Status</span><strong>{{ tournament.status if tournament else "-" }}</strong></div>
+      <div class="info-row"><span>Current Stage</span><strong>{{ current_stage }}</strong></div>
+      <div class="info-row"><span>Entry Fee</span><strong>{{ format_money(tournament.entry_fee if tournament else 0) }}</strong></div>
+      <div class="info-row"><span>Prize Pool</span><strong>{{ format_money(tournament.prize_total if tournament else 0) }}</strong></div>
+    </div>
+  </section>
+
+  <section class="card span-6">
+    <div class="section-header">
+      <h3>Format</h3>
+      <span>Structure</span>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row"><span>Players</span><strong>32</strong></div>
+      <div class="info-row"><span>Lobby Size</span><strong>8</strong></div>
+      <div class="info-row"><span>Zone Round</span><strong>4 Lobbies · BO2</strong></div>
+      <div class="info-row"><span>Semifinals</span><strong>2 Lobbies · BO2</strong></div>
+      <div class="info-row"><span>Grand Final</span><strong>1 Lobby · BO2</strong></div>
+      <div class="info-row"><span>Scoring</span><strong>9 / 7 / 6 / 5 / 4 / 3 / 2 / 1</strong></div>
+    </div>
+  </section>
+
+  <section class="card span-12">
+    <div class="section-header">
+      <h3>Stage Progress</h3>
+      <span>Live Tracking</span>
+    </div>
+
+    {% if stage_groups %}
+    <div class="stage-grid">
+      {% for stage in stage_groups %}
+      <div class="stage-card">
+        <div class="stage-head">
+          <div>
+            <h4>{{ stage.title }}</h4>
+            <p>Host: {{ stage.host_name }}</p>
+            <p>Password: {{ stage.password }}</p>
+          </div>
+          <span class="badge">{{ stage.stage_status }}</span>
+        </div>
+
+        <div class="player-list">
+          {% for player in stage.players %}
+          <div class="player-row">
+            <div class="player-main"><strong>{{ player.slot_no }}. {{ player.display_name }}</strong></div>
+            <div class="player-meta"><span>Total {{ player.total_points }}</span></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">No stages created yet.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Prize Pool</h2>
+  <p>Total pool, payout structure, and final rewards.</p>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h3>Payout Structure</h3>
+    <span>Weekly Reward Distribution</span>
+  </div>
+
+  <div class="prize-grid">
+    <div class="prize-box large">
+      <span>Total Pool</span>
+      <strong>{{ format_money(tournament.prize_total if tournament else 0) }}</strong>
+    </div>
+    <div class="prize-box">
+      <span>🥇 1st Place</span>
+      <strong>{{ format_money(tournament.prize_1 if tournament else 0) }}</strong>
+    </div>
+    <div class="prize-box">
+      <span>🥈 2nd Place</span>
+      <strong>{{ format_money(tournament.prize_2 if tournament else 0) }}</strong>
+    </div>
+    <div class="prize-box">
+      <span>🥉 3rd Place</span>
+      <strong>{{ format_money(tournament.prize_3 if tournament else 0) }}</strong>
+    </div>
+  </div>
+</section>
+
+{% if podium %}
+<section class="section">
+  <div class="section-header">
+    <h3>Podium Rewards</h3>
+    <span>Final Winners</span>
+  </div>
+
+  <div class="podium-grid">
+    {% for item in podium %}
+    <div class="podium-card rank-{{ item.final_rank }}">
+      <div class="podium-medal">
+        {% if item.final_rank == 1 %}🥇{% elif item.final_rank == 2 %}🥈{% else %}🥉{% endif %}
+      </div>
+      <div class="podium-rank">{{ item.final_rank }} Place</div>
+      <div class="podium-name">{{ item.display_name }}</div>
+      <div class="podium-prize">{{ format_money(item.amount) }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

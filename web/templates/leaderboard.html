@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Leaderboard</h2>
+  <p>All-time community ranking, wins, podiums, and prize money.</p>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h3>All-Time Ranking</h3>
+    <span>Community Stats</span>
+  </div>
+
+  <div class="list-stack">
+    {% for row in leaderboard %}
+    <div class="leader-row">
+      <div class="leader-rank">{{ loop.index }}</div>
+      <div class="leader-body">
+        <strong>{{ row.display_name }}</strong>
+        <p>
+          Wins: {{ row.championships }} ·
+          Podiums: {{ row.podiums }} ·
+          Played: {{ row.tournaments_played }}
+        </p>
+      </div>
+      <div class="leader-money">{{ format_money(row.total_prize_money) }}</div>
+    </div>
+    {% endfor %}
+
+    {% if not leaderboard %}
+    <div class="empty-box">Leaderboard is empty.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

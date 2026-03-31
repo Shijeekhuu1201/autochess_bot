@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page_title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="site-bg"></div>
+  <div class="site-wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">♟</div>
+        <div class="brand-text">
+          <h1>{{ tournament.title if tournament else "DAC TOURNAMENT" }}</h1>
+          <p>Community Tournament Platform</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#participants">Participants</a>
+        <a href="#tournament">Tournament</a>
+        <a href="#prize">Prize</a>
+        <a href="#rules">Rules</a>
+        <a href="#donate">Donate</a>
+        <a href="#leaderboard">Leaderboard</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-left">
+        <div class="eyebrow">LIVE WEEKLY CUP</div>
+        <h2>{{ tournament.title if tournament else "No Active Tournament" }}</h2>
+        <p>
+          {% if tournament %}
+            Premium live tournament page synced from Discord. Participants, prize pool,
+            sponsors, rules, and leaderboard are updated from your platform.
+          {% else %}
+            No active tournament found.
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span>Status</span>
+          <strong>{{ tournament.status if tournament else "-" }}</strong>
+        </div>
+        <div class="hero-stat">
+          <span>Current Stage</span>
+          <strong>{{ current_stage }}</strong>
+        </div>
+        <div class="hero-stat">
+          <span>Confirmed</span>
+          <strong>{{ confirmed_count }}/{{ tournament.max_players if tournament else 32 }}</strong>
+        </div>
+        <div class="hero-stat">
+          <span>Prize Pool</span>
+          <strong>{{ format_money(tournament.prize_total if tournament else 0) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    {% if podium %}
+    <section class="section">
+      <div class="section-header">
+        <h3>Grand Final Podium</h3>
+        <span>Champion Snapshot</span>
+      </div>
+
+      <div class="podium-grid">
+        {% for item in podium %}
+        <div class="podium-card rank-{{ item.final_rank }}">
+          <div class="podium-medal">
+            {% if item.final_rank == 1 %}🥇{% elif item.final_rank == 2 %}🥈{% else %}🥉{% endif %}
+          </div>
+          <div class="podium-rank">{{ item.final_rank }} Place</div>
+          <div class="podium-name">{{ item.display_name }}</div>
+          <div class="podium-prize">{{ format_money(item.amount) }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="content-grid">
+      <section id="participants" class="card span-8">
+        <div class="section-header">
+          <h3>Participants</h3>
+          <span>{% if stage_groups %}Bracket View{% else %}Confirmed List{% endif %}</span>
+        </div>
+
+        {% if stage_groups %}
+          <div class="stage-grid">
+            {% for stage in stage_groups %}
+            <div class="stage-card">
+              <div class="stage-head">
+                <div>
+                  <h4>{{ stage.title }}</h4>
+                  <p>Host: {{ stage.host_name }}</p>
+                  <p>Password: {{ stage.password }}</p>
+                </div>
+                <span class="badge">{{ stage.stage_status }}</span>
+              </div>
+
+              <div class="player-list">
+                {% for player in stage.players %}
+                <div class="player-row">
+                  <div class="player-main">
+                    <strong>{{ player.slot_no }}. {{ player.display_name }}</strong>
+                  </div>
+                  <div class="player-meta">
+                    <span>Total {{ player.total_points }}</span>
+                    <small>{{ player.rank_label }}</small>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="list-stack">
+            {% for player in confirmed_players %}
+            <div class="list-row">
+              <div>
+                <strong>{{ player.register_order }}. {{ player.display_name }}</strong>
+                <p>Payment confirmed</p>
+              </div>
+              <span class="pill confirmed">Confirmed</span>
+            </div>
+            {% endfor %}
+
+            {% if not confirmed_players %}
+            <div class="empty-box">No confirmed players yet.</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </section>
+
+      <section id="tournament" class="card span-4">
+        <div class="section-header">
+          <h3>Tournament</h3>
+          <span>Live Sync</span>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span>Type</span><strong>{{ tournament.type if tournament else "-" }}</strong></div>
+          <div class="info-row"><span>Format</span><strong>32 Players · 8/Lobby · BO2</strong></div>
+          <div class="info-row"><span>Entry Fee</span><strong>{{ format_money(tournament.entry_fee if tournament else 0) }}</strong></div>
+          <div class="info-row"><span>Current Stage</span><strong>{{ current_stage }}</strong></div>
+          <div class="info-row"><span>Start Time</span><strong>{{ tournament.start_time or "-" }}</strong></div>
+          <div class="info-row"><span>Check-in</span><strong>{{ tournament.checkin_time or "-" }}</strong></div>
+          <div class="info-row"><span>Registered</span><strong>{{ registered_players|length }}</strong></div>
+          <div class="info-row"><span>Waitlist</span><strong>{{ waitlist_players|length }}</strong></div>
+        </div>
+      </section>
+
+      <section id="prize" class="card span-6">
+        <div class="section-header">
+          <h3>Prize Pool</h3>
+          <span>Payout Structure</span>
+        </div>
+
+        <div class="prize-grid">
+          <div class="prize-box large">
+            <span>Total Pool</span>
+            <strong>{{ format_money(tournament.prize_total if tournament else 0) }}</strong>
+          </div>
+          <div class="prize-box">
+            <span>🥇 1st Place</span>
+            <strong>{{ format_money(tournament.prize_1 if tournament else 0) }}</strong>
+          </div>
+          <div class="prize-box">
+            <span>🥈 2nd Place</span>
+            <strong>{{ format_money(tournament.prize_2 if tournament else 0) }}</strong>
+          </div>
+          <div class="prize-box">
+            <span>🥉 3rd Place</span>
+            <strong>{{ format_money(tournament.prize_3 if tournament else 0) }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="rules" class="card span-6">
+        <div class="section-header">
+          <h3>Rules</h3>
+          <span>Tournament Guidelines</span>
+        </div>
+        <div class="rules-box">{{ rules_text }}</div>
+      </section>
+
+      <section id="donate" class="card span-6">
+        <div class="section-header">
+          <h3>Sponsors & Donations</h3>
+          <span>Total {{ format_money(sponsor_total) }}</span>
+        </div>
+
+        <div class="list-stack">
+          {% for sponsor in sponsors %}
+          <div class="list-row sponsor-row">
+            <div class="sponsor-main">
+              <strong>{{ sponsor.sponsor_name }}</strong>
+              <p>{{ sponsor.note or "Community sponsor" }}</p>
+            </div>
+            <span class="pill sponsor">{{ format_money(sponsor.amount) }}</span>
+          </div>
+          {% endfor %}
+
+          {% if not sponsors %}
+          <div class="empty-box">No sponsors yet.</div>
+          {% endif %}
+        </div>
+      </section>
+
+      <section id="leaderboard" class="card span-6">
+        <div class="section-header">
+          <h3>Leaderboard</h3>
+          <span>All-Time Community Ranking</span>
+        </div>
+
+        <div class="list-stack">
+          {% for row in leaderboard %}
+          <div class="leader-row">
+            <div class="leader-rank">{{ loop.index }}</div>
+            <div class="leader-body">
+              <strong>{{ row.display_name }}</strong>
+              <p>Wins: {{ row.championships }} · Podiums: {{ row.podiums }}</p>
+            </div>
+            <div class="leader-money">{{ format_money(row.total_prize_money) }}</div>
+          </div>
+          {% endfor %}
+
+          {% if not leaderboard %}
+          <div class="empty-box">Leaderboard is empty.</div>
+          {% endif %}
+        </div>
+      </section>
+
+      {% if final_standings %}
+      <section class="card span-12">
+        <div class="section-header">
+          <h3>Final Standings</h3>
+          <span>Grand Final Results</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Total Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in final_standings %}
+              <tr>
+                <td>{{ row.final_position }}</td>
+                <td>{{ row.display_name }}</td>
+                <td>{{ row.total_points }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    <footer class="footer">
+      Community Tournament Platform · Full Premium Live Web
+    </footer>
+  </div>
+</body>
+</html>

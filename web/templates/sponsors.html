@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Sponsors</h2>
+  <p>Supporters, donations, and contribution history.</p>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h3>Sponsors & Donations</h3>
+    <span>Total {{ format_money(sponsor_total) }}</span>
+  </div>
+
+  <div class="list-stack">
+    {% for sponsor in sponsors %}
+    <div class="list-row sponsor-row">
+      <div class="sponsor-main">
+        <strong>{{ sponsor.sponsor_name }}</strong>
+        <p>{{ sponsor.note or "Community sponsor" }}</p>
+      </div>
+      <span class="pill sponsor">{{ format_money(sponsor.amount) }}</span>
+    </div>
+    {% endfor %}
+
+    {% if not sponsors %}
+    <div class="empty-box">No sponsors yet.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

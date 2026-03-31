@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero">
+  <h2>Participants</h2>
+  <p>Confirmed players, waitlist, and bracket stage view.</p>
+</section>
+
+{% if stage_groups %}
+<section class="section">
+  <div class="section-header">
+    <h3>Bracket Stages</h3>
+    <span>{{ current_stage }}</span>
+  </div>
+
+  <div class="stage-grid">
+    {% for stage in stage_groups %}
+    <div class="stage-card">
+      <div class="stage-head">
+        <div>
+          <h4>{{ stage.title }}</h4>
+          <p>Host: {{ stage.host_name }}</p>
+          <p>Password: {{ stage.password }}</p>
+        </div>
+        <span class="badge">{{ stage.stage_status }}</span>
+      </div>
+
+      <div class="player-list">
+        {% for player in stage.players %}
+        <div class="player-row">
+          <div class="player-main">
+            <strong>{{ player.slot_no }}. {{ player.display_name }}</strong>
+          </div>
+          <div class="player-meta">
+            <span>Total {{ player.total_points }}</span>
+            <small>
+              {% if player.final_position %}Rank {{ player.final_position }}{% else %}Playing{% endif %}
+            </small>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<div class="content-grid">
+  <section class="card span-6">
+    <div class="section-header">
+      <h3>Confirmed Players</h3>
+      <span>{{ confirmed_players|length }} Players</span>
+    </div>
+
+    <div class="list-stack">
+      {% for player in confirmed_players %}
+      <div class="list-row">
+        <div>
+          <strong>{{ player.register_order }}. {{ player.display_name }}</strong>
+          <p>Payment confirmed</p>
+        </div>
+        <span class="pill confirmed">Confirmed</span>
+      </div>
+      {% endfor %}
+
+      {% if not confirmed_players %}
+      <div class="empty-box">No confirmed players yet.</div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card span-6">
+    <div class="section-header">
+      <h3>Waitlist</h3>
+      <span>{{ waitlist_players|length }} Players</span>
+    </div>
+
+    <div class="list-stack">
+      {% for player in waitlist_players %}
+      <div class="list-row">
+        <div>
+          <strong>{{ player.register_order }}. {{ player.display_name }}</strong>
+          <p>Waiting for slot</p>
+        </div>
+        <span class="pill waitlist">Waitlist</span>
+      </div>
+      {% endfor %}
+
+      {% if not waitlist_players %}
+      <div class="empty-box">No waitlist players.</div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
